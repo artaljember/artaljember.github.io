@@ -104,17 +104,6 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--orange);outline-off
  .spotlight{padding:31px;flex-direction:column;align-items:start}
 }
 @media(max-width:520px){.container{width:calc(100% - 28px)}.cards{grid-template-columns:1fr}.section{padding:47px 0}.hero{height:72svh;min-height:540px}.brand-title{font-size:19px}.header-in{min-height:72px}.nav{top:72px}.hero-progress{bottom:21px;left:18px}.hero-pause{bottom:13px;right:17px}.slide-content{padding-bottom:6px}.slide-content p{font-size:14px}.calendar{padding:14px}.cal-day{height:37px}.spotlight{padding:26px}.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
-/* ARTAL V9.1: pemberitahuan jika koneksi di HP lambat/diblokir; tidak menyembunyikan kegagalan sebagai galeri kosong. */
-.artal-data-status{position:relative;z-index:45;background:#fff3de;color:#5f300c;border-bottom:1px solid #f5c58c;padding:9px max(16px,calc((100vw - 1200px)/2));font-size:13px;font-weight:650;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
-.artal-data-status[hidden]{display:none!important}
-.artal-data-status button{background:#191919;color:white;border:0;border-radius:99px;padding:7px 13px;font-size:12px;font-weight:700}
-@media(max-width:520px){
- .hero{min-height:500px;height:calc(100svh - 72px);max-height:720px}
- .slide-body{align-items:center;padding:56px 0 75px}
- .slide-content h1{font-size:clamp(29px,8.5vw,44px);line-height:1.15;margin:14px 0}
- .slide-content p{line-height:1.65}
- .hero-shade{background:linear-gradient(0deg,#12100fe8 0%,#12100fb2 66%,#12100f8a 100%)}
-}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 
@@ -143,10 +132,6 @@ section[data-view][hidden]{display:none!important}
 </head>
 <body>
 <header class="site-header"><div class="container header-in"><a href="#/beranda" class="branding"><span id="brandIcon" class="brand-icon">A</span><span><span class="brand-title" id="brandTitle">ARTAL</span><span class="brand-sub" id="brandSub">KESENIAN MUSIK PATROL</span></span></a><button class="hamburger" id="hamburger" aria-label="Buka navigasi" aria-expanded="false">☰</button><nav class="nav" id="navigation"><a href="#/beranda">Beranda</a><a href="#/beranda/agenda">Agenda</a><a href="#/dokumentasi">Dokumentasi</a><a href="#/prestasi">Galeri Prestasi</a><a href="#/berita">Kabar ARTAL</a></nav></div></header>
-<div id="artalDataStatus" class="artal-data-status" role="status" aria-live="polite" hidden>
-  <span id="artalDataMessage"></span>
-  <button type="button" id="artalDataRetry" hidden>Coba muat ulang data</button>
-</div>
 <main>
 <section data-view="home" id="home" class="hero" aria-label="Beranda Kesenian Musik Patrol ARTAL">
   <div id="heroSlides" aria-hidden="true"></div>
@@ -327,59 +312,16 @@ document.getElementById('heroPause').addEventListener('click',e=>{
 document.addEventListener('visibilitychange',resetSlides);
 window.addEventListener('hashchange',routePage);
 document.getElementById('calPrev').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()-1,1);selectedDate='';drawAgenda();};document.getElementById('calNext').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()+1,1);selectedDate='';drawAgenda();};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
-// Jika foto khusus HP gagal dimuat, kembali ke foto utama (desktop).
-// Jika keduanya gagal, teks judul tetap terlihat di atas warna latar hero.
-document.getElementById('heroSlides').addEventListener('error', event => {
-  const image = event.target;
-  if (!image || image.tagName !== 'IMG') return;
-  const picture = image.parentElement;
-  const mobileSource = picture && picture.querySelector('source');
-  if (mobileSource && !image.dataset.artalDesktopTried) {
-    image.dataset.artalDesktopTried = '1';
-    mobileSource.remove();
-    image.src = image.getAttribute('src') || '';
-    return;
-  }
-  image.style.visibility = 'hidden';
-},true);
-// ARTAL V9.1 — langsung ke Apps Script JSONP, dengan penanganan HP dan cadangan cerdas.
-// Tidak menggunakan CSV, GitHub Actions, Personal Access Token, ataupun perubahan pada database Admin.
+// ARTAL V9 — LANGSUNG KE APPS SCRIPT VIA JSONP, tanpa CSV dan GitHub Actions.
+// Browser mengunduh hanya data berstatus terbit dari API Apps Script publik.
 const ARTAL_LIVE_API_URL = 'https://script.google.com/macros/s/AKfycbwOANKRtSk64mIPSpwfuzYRyGPoSaEi363cD0WPzgJbQWwpZfF3jDetmXiCurE6mI19/exec';
-const ARTAL_CACHE_KEY = 'artal-public-v91-last-good';
-let artalLoading = false;
 function validArtalSite(data) {
   return !!(data && typeof data.settings === 'object' && data.settings &&
     Array.isArray(data.slides) && Array.isArray(data.agendas) &&
     Array.isArray(data.albums) && Array.isArray(data.achievements) &&
     Array.isArray(data.news));
 }
-function artalHasPublicContent(data) {
-  return validArtalSite(data) &&
-    (data.slides.length + data.albums.length + data.achievements.length + data.news.length + data.agendas.length > 0);
-}
-function artalDataStatus(message,canRetry) {
-  const bar = document.getElementById('artalDataStatus');
-  const text = document.getElementById('artalDataMessage');
-  const button = document.getElementById('artalDataRetry');
-  if (!bar || !text || !button) return;
-  bar.hidden = !message;
-  text.textContent = message || '';
-  button.hidden = !canRetry;
-}
-function artalReadCache() {
-  try {
-    const raw = localStorage.getItem(ARTAL_CACHE_KEY);
-    if (!raw) return null;
-    const item = JSON.parse(raw);
-    // Cadangan hanya sementara, tidak untuk menggantikan database utama.
-    return item && Date.now()-item.savedAt < 2*24*60*60*1000 && artalHasPublicContent(item.data) ? item.data : null;
-  } catch (_) {return null;}
-}
-function artalSaveCache(data) {
-  try {localStorage.setItem(ARTAL_CACHE_KEY,JSON.stringify({savedAt:Date.now(),data:data}));}
-  catch (_) { /* browser incognito mungkin menolak storage; data langsung tetap tampil */ }
-}
-function loadArtalLiveJsonp(timeoutMs) {
+function loadArtalLiveJsonp() {
   return new Promise((resolve,reject) => {
     const script = document.createElement('script');
     let completed = false;
@@ -391,79 +333,50 @@ function loadArtalLiveJsonp(timeoutMs) {
     };
     const fail = (message) => {
       if (completed) return;
-      completed = true;
-      clean();
-      reject(new Error(message));
+      completed = true; clean(); reject(new Error(message));
     };
     window.artalPublicJsonp = (data) => {
       if (completed) return;
-      completed = true;
-      clean();
+      completed = true; clean();
       if (!validArtalSite(data)) {
-        reject(new Error(data && data.error || 'Format data Google tidak valid'));
-      } else resolve(data);
+        reject(new Error((data && data.error) || 'Format JSONP ARTAL tidak valid'));
+        return;
+      }
+      resolve(data);
     };
-    timer = setTimeout(() => fail('Koneksi ke Google Apps Script melewati batas waktu'),timeoutMs||30000);
+    timer = setTimeout(() => fail('Timeout ketika mengambil data ARTAL dari Apps Script'), 20000);
     script.async = true;
-    script.onerror = () => fail('Browser/perangkat tidak dapat membuka layanan Google Apps Script');
-    // Beberapa browser menerima HTML login alih-alih JavaScript. Deteksi setelah selesai muat.
-    script.onload = () => {
-      if (!completed) fail('Respons Google tidak memanggil callback data ARTAL');
-    };
+    script.onerror = () => fail('Gagal memuat JSONP publik ARTAL');
     script.src = ARTAL_LIVE_API_URL + '?callback=artalPublicJsonp&ts=' + Date.now();
     document.head.appendChild(script);
   });
 }
 async function loadArtalGithubData() {
-  if (artalLoading) return;
-  artalLoading = true;
-  const previous = artalReadCache();
-  let alreadyShowingData = !!SITE;
-  if (!alreadyShowingData && previous) {
-    try {initSite(previous);alreadyShowingData=true;} catch (err) {console.warn('ARTAL cache tidak dapat ditampilkan:',err);}
+  let firstError;
+  try {
+    const data = await loadArtalLiveJsonp();
+    initSite(data);
+    console.info('ARTAL: data terbaru langsung dari Apps Script.');
+    return;
+  } catch (err) {
+    firstError = err;
+    console.warn('ARTAL: Apps Script tidak dapat diakses; mencoba data cadangan GitHub.',err.message);
   }
-  // Jangan sampai gagal diam-diam dan menunjukkan daftar kosong dari file versi lama.
-  artalDataStatus(alreadyShowingData?'Memeriksa pembaruan data ARTAL…':'Sedang mengambil dokumentasi dan galeri ARTAL…',false);
-  let lastError=null;
-  for (let attempt=1;attempt<=3;attempt++) {
-    try {
-      const data = await loadArtalLiveJsonp(attempt===1?30000:25000);
-      initSite(data);
-      artalSaveCache(data);
-      artalDataStatus('',false);
-      console.info('ARTAL V9.1: konten langsung dari Apps Script berhasil dimuat.');
-      artalLoading = false;
-      return;
-    } catch (err) {
-      lastError = err;
-      console.warn('ARTAL: usaha koneksi '+attempt+' tidak berhasil:',err.message);
-      if (attempt<3) {
-        artalDataStatus('Koneksi Google belum berhasil. Mencoba lagi ('+(attempt+1)+'/3)…',false);
-        await new Promise(done=>setTimeout(done,attempt*1000));
-      }
-    }
+  try {
+    const response = await fetch('./data/site.json?fallback=' + Date.now(),{cache:'no-store'});
+    if (!response.ok) throw new Error('HTTP '+response.status);
+    const data = await response.json();
+    if (!validArtalSite(data)) throw new Error('Format data cadangan tidak valid');
+    initSite(data);
+    console.info('ARTAL: menampilkan data cadangan; data baru akan dimuat saat pengunjung membuka ulang halaman.');
+    return;
+  } catch (err) {
+    const host = document.getElementById('heroSlides');
+    host.innerHTML = '<div class="container" style="position:relative;z-index:2;color:white;padding:65px 0"><h1>ARTAL</h1><p>Data publik belum tersedia. Silakan coba lagi.</p><button type="button" id="retryArtal" style="background:#F58220;border:0;padding:11px 18px;border-radius:9px;font-weight:700">Coba lagi</button></div>';
+    document.getElementById('retryArtal').addEventListener('click',loadArtalGithubData);
+    console.error('ARTAL: sumber utama dan cadangan gagal:',firstError.message,err.message);
   }
-  if (!alreadyShowingData) {
-    try {
-      const response = await fetch('./data/site.json?fallback=' + Date.now(),{cache:'no-store'});
-      if (!response.ok) throw new Error('HTTP '+response.status);
-      const fallback = await response.json();
-      // File cadangan V8 pernah kosong. Jangan gunakan file kosong untuk menyembunyikan kegagalan.
-      if (!artalHasPublicContent(fallback)) throw new Error('Cadangan GitHub masih kosong');
-      initSite(fallback);
-      alreadyShowingData = true;
-      console.warn('ARTAL V9.1: memakai cadangan GitHub karena koneksi Google gagal.');
-    } catch (err) {
-      console.warn('ARTAL: tidak ada data cadangan bermakna:',err.message);
-    }
-  }
-  artalDataStatus(alreadyShowingData
-    ? 'Data cadangan ARTAL sedang ditampilkan. Koneksi ke Google belum berhasil; ketuk Coba muat ulang.'
-    : 'Data ARTAL belum bisa dimuat pada browser ini. Buka langsung di Chrome/Safari (bukan browser dalam WhatsApp), lalu coba lagi.',true);
-  console.error('ARTAL V9.1: API utama tidak berhasil:',lastError && lastError.message);
-  artalLoading=false;
 }
-document.getElementById('artalDataRetry').addEventListener('click',loadArtalGithubData);
 loadArtalGithubData();
 </script>
 </body>
