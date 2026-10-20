@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tes Koneksi HP ARTAL</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,-apple-system,Arial,sans-serif;background:#fffaf5;color:#191919}.wrap{max-width:650px;margin:auto;padding:24px 18px 52px}h1{font-size:25px;margin:0 0 8px}h2{font-size:17px;margin:4px 0 10px}p{margin:8px 0}.muted{color:#61564c}.card{margin:17px 0;border:1px solid #ecd7c5;background:#fff;border-radius:15px;padding:16px}.ok{color:#146c43}.bad{color:#a32222}.warn{color:#8b5a0a}button{appearance:none;background:#f58220;border:0;border-radius:10px;padding:12px 20px;color:#191919;font-weight:750;font-size:16px;cursor:pointer;width:100%;margin:12px 0}.status{font-weight:700;overflow-wrap:anywhere}#preview{max-width:100%;width:320px;border-radius:9px;margin-top:10px;display:none}code{word-break:break-all}small{color:#5f554b}a{color:#99500e}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Tes Koneksi HP ARTAL</h1>
+<p class="muted">Halaman pemeriksaan terpisah. Tidak mengubah website utama, data Admin, maupun foto.</p>
+<div class="card"><h2>1. Panggilan JSONP dari GitHub Pages</h2><p id="jsonp" class="status warn">Belum diuji.</p><p id="detail" class="muted">Ketuk tombol di bawah.</p><button id="test" type="button">Mulai Tes Koneksi</button></div>
+<div class="card"><h2>2. Data cadangan di GitHub</h2><p id="backup" class="status warn">Belum diuji.</p></div>
+<div class="card"><h2>3. Foto Google Drive</h2><p id="photo" class="status warn">Menunggu hasil JSONP.</p><img id="preview" alt="Contoh foto ARTAL"></div>
+<p><strong>Kirimkan kepada ChatGPT:</strong> hasil tulisan pada bagian 1, 2, dan 3. Tidak perlu menyalin kode atau URL panjang.</p>
+<p><a href="/">← Kembali ke website ARTAL</a></p>
+</main>
+<script>
+(function(){
+  'use strict';
+  var api='https://script.google.com/macros/s/AKfycbwOANKRtSk64mIPSpwfuzYRyGPoSaEi363cD0WPzgJbQWwpZfF3jDetmXiCurE6mI19/exec';
+  var jsonp=document.getElementById('jsonp'), detail=document.getElementById('detail');
+  var backup=document.getElementById('backup'), photo=document.getElementById('photo'), preview=document.getElementById('preview');
+  var timer, script, done=false;
+  function report(el,msg,kind){el.textContent=msg;el.className='status '+kind;}
+  function stop(){clearTimeout(timer);if(script&&script.parentNode)script.parentNode.removeChild(script);}
+  function fail(msg){if(done)return;done=true;stop();report(jsonp,msg,'bad');}
+  function doBackup(){
+    var p='./data/site.json?tes='+Date.now();
+    fetch(p,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(data){
+      report(backup,'Dapat dibaca. Album: '+(Array.isArray(data.albums)?data.albums.length:'format salah')+', Slide: '+(Array.isArray(data.slides)?data.slides.length:'format salah'),'ok');
+    }).catch(function(e){report(backup,'Gagal membaca data cadangan: '+e.message,'bad');});
+  }
+  function start(){
+    stop();done=false;preview.style.display='none';preview.removeAttribute('src');
+    report(jsonp,'Menghubungi Apps Script dari halaman GitHub…','warn');detail.textContent='Tes berjalan.';
+    report(photo,'Menunggu JSONP…','warn');
+    // Samakan nama callback dan URL yang dipakai ARTAL V9.
+    window.artalPublicJsonp=function(data){
+      if(done)return;
+      done=true;stop();
+      if(!data||!Array.isArray(data.albums)||!Array.isArray(data.slides)){
+        report(jsonp,'Callback berjalan, tetapi data tidak lengkap.','bad');detail.textContent='Respons ada, format tidak sesuai.';return;
+      }
+      report(jsonp,'BERHASIL: JSONP diterima. Album: '+data.albums.length+', Slide: '+data.slides.length+'.','ok');
+      detail.textContent='Jika website utama masih kosong, masalahnya terjadi sesudah data diterima atau saat menampilkan halaman.';
+      var a=data.albums.find(function(x){return x&&x.cover;});
+      var image=(a&&a.cover)||(data.slides[0]&&data.slides[0].image);
+      if(!image){report(photo,'Tidak ada alamat foto dalam data.','bad');return;}
+      report(photo,'Memeriksa gambar Google Drive…','warn');
+      preview.onload=function(){report(photo,'BERHASIL: Foto bisa ditampilkan.','ok');preview.style.display='block';};
+      preview.onerror=function(){report(photo,'GAGAL: Data muncul tetapi gambar Google Drive tidak dapat dimuat.','bad');};
+      preview.src=image;
+    };
+    script=document.createElement('script');
+    script.async=true;
+    script.onerror=function(){fail('GAGAL: Skrip Google ditolak atau gagal diunduh oleh browser HP.');detail.textContent='URL langsung bisa dibuka, tetapi pemanggilan sebagai skrip dari GitHub gagal.';};
+    script.onload=function(){if(!done){fail('GAGAL: Skrip termuat, tetapi fungsi callback tidak dipanggil.');detail.textContent='Respons mungkin bukan JSONP atau skrip terhalang saat dijalankan.';}};
+    timer=setTimeout(function(){fail('GAGAL: Tidak ada jawaban JSONP setelah 25 detik.');detail.textContent='Browser menunggu terlalu lama atau pemanggilan diblokir.';},25000);
+    script.src=api+'?callback=artalPublicJsonp&ts='+Date.now();
+    document.head.appendChild(script);
+  }
+  document.getElementById('test').addEventListener('click',start);
+  doBackup();
+  start();
+})();
+</script>
+</body>
+</html>
