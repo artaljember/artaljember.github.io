@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARTAL — Kesenian Musik Patrol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Poppins:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   ARTAL Modern Cultural V3 — Orange / Black / White + Foto Judul Otomatis
+   Warna inti tetap mengikuti Pengaturan Admin (SETTINGS).
+   ============================================================ */
+:root {
+ --main:#191919;--mint:#F58220;--coral:#FFBE7B;--lavender:#39332F;--ivory:#FFFAF5;
+ --orange:#F58220;--orange-dark:#A94706;--orange-soft:#FFF0DE;
+ --black:#191919;--white:#FFFFFF;--ink-light:#5B544F;--line:#EBE3DA;
+ --head:'Poppins',sans-serif;--body:'Plus Jakarta Sans',sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{margin:0;font-family:var(--body);color:var(--main);background:var(--ivory);line-height:1.6}
+a{text-decoration:none;color:inherit}button,input{font:inherit}button{cursor:pointer}img{max-width:100%;display:block}
+button:focus-visible,a:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.container{max-width:1200px;width:calc(100% - 44px);margin:auto}
+.site-header{position:sticky;top:0;z-index:40;background:rgba(255,250,245,.97);border-bottom:1px solid var(--line);box-shadow:0 2px 18px #19191908;backdrop-filter:blur(16px)}
+.header-in{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:79px}
+.branding{display:flex;gap:11px;align-items:center;min-width:0}
+.brand-icon{width:48px;height:48px;border-radius:15px;background:var(--main);color:var(--white);border:2px solid var(--orange);display:grid;place-items:center;font:800 22px var(--head);overflow:hidden;flex-shrink:0}
+.brand-icon img{width:100%;height:100%;object-fit:contain}.brand-title{display:block;font:800 21px/1.2 var(--head);letter-spacing:.3px}.brand-sub{display:block;font-size:10px;color:#75695F;letter-spacing:.5px}
+.nav{display:flex;align-items:center;gap:26px}.nav a{font-size:13px;font-weight:700;padding:8px 0;position:relative}
+.nav a:after{content:'';position:absolute;bottom:0;left:0;width:0;height:3px;background:var(--orange);border-radius:4px;transition:width .2s}
+.nav a:hover:after,.nav a:focus-visible:after{width:100%}.nav a:hover{color:var(--orange-dark)}
+.hamburger{display:none;border:0;background:transparent;font-size:26px;color:var(--main)}
+.hero{position:relative;height:min(730px,calc(100svh - 79px));min-height:470px;overflow:hidden;background:radial-gradient(circle at 75% 50%,#6d2e0a 0%,transparent 48%),linear-gradient(130deg,#0e0e0e 18%,#25211d 65%,#b6530b 140%)}
+.hero:before{content:'';position:absolute;right:-15%;top:-40%;width:65%;height:170%;border:1px solid #fb9b4d30;transform:rotate(-18deg);border-radius:50%;pointer-events:none}
+/* Latar foto berganti otomatis setiap 2 detik; judul berada pada lapisan tetap. */
+#heroSlides{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero-background{position:absolute;inset:0;opacity:0;transition:opacity .72s ease-in-out;pointer-events:none}
+.hero-background.active{opacity:1}
+.hero-background picture,.hero-background img{display:block;width:100%;height:100%;object-fit:cover;object-position:center center}
+.hero-shade{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,#101010e6 0%,#111111d4 37%,#1713117a 72%,#17131148 100%),linear-gradient(0deg,#0d0d0d9c 0%,transparent 60%)}
+.slide-body{position:relative;z-index:2;min-height:100%;display:flex;align-items:center}.slide-content{max-width:740px;color:#fff}
+.hero-progress{position:absolute;z-index:3;bottom:30px;left:max(22px,calc((100vw - 1200px)/2));display:flex;align-items:center;gap:11px;color:#fff;font-size:12px;font-weight:700;letter-spacing:1px}
+.hero-progress:before{content:'';width:33px;height:3px;border-radius:4px;background:var(--orange)}
+.hero-pause{position:absolute;z-index:4;right:max(18px,calc((100vw - 1200px)/2));bottom:21px;border:1px solid #ffffff80;border-radius:99px;padding:7px 13px;background:#151515a6;color:#fff;font-size:12px;font-weight:700}
+.hero-pause:hover,.hero-pause:focus-visible{background:var(--orange);color:#191919}
+.hero-pause[hidden],.hero-progress[hidden]{display:none!important}
+.overline{font-size:12px;font-weight:800;letter-spacing:2.2px;color:#FFBD78;text-transform:uppercase}
+.slide-content h1{font:800 clamp(38px,6vw,76px)/1.16 var(--head);margin:17px 0;overflow-wrap:anywhere;letter-spacing:-1px}
+.slide-content p{font-size:clamp(15px,1.7vw,19px);line-height:1.8;max-width:650px;color:#F7F0E9}
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;margin-top:19px;border-radius:100px;background:var(--orange);color:#171717;font-weight:800;padding:14px 22px;font-size:14px;box-shadow:0 8px 24px #d95d1440;transition:transform .2s,box-shadow .2s,background .2s}
+.cta:hover{background:#FFA953;transform:translateY(-2px);box-shadow:0 12px 28px #d95d1455}
+.section{padding:82px 0}.section.alt{background:#FFFFFF}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:2px;color:var(--orange-dark);text-transform:uppercase}
+.heading{font:800 clamp(28px,4vw,43px)/1.25 var(--head);letter-spacing:-.5px;margin:11px 0}
+.description{line-height:1.9;color:var(--ink-light);max-width:700px}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:28px}.section-title .heading{margin:10px 0 0}
+.about-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:52px;align-items:center}
+.rhythm{min-height:316px;border-radius:27px;background:radial-gradient(circle at 90% 5%,#f5822040,transparent 55%),linear-gradient(140deg,#161616,#36302A);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;color:#fff;isolation:isolate}
+.rhythm:before,.rhythm:after{content:'';position:absolute;border:1px solid #ffb06d52;border-radius:50%;height:390px;width:390px;z-index:-1}
+.rhythm:before{transform:translate(-128px,-53px)}.rhythm:after{transform:translate(155px,144px)}
+.beats{display:flex;align-items:center;gap:8px;height:72px;z-index:1}.beats i{display:block;width:9px;border-radius:30px;background:var(--orange)}
+.rhythm strong{z-index:1;font:800 34px var(--head);margin-top:17px;letter-spacing:1px}.rhythm small{z-index:1;color:#FCE5D1}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:21px}
+.tile{background:#FFF;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 8px 28px #1919190b;transition:transform .25s,box-shadow .25s}
+.tile:hover{transform:translateY(-4px);box-shadow:0 16px 40px #1919191a}
+.tile .photo{aspect-ratio:16/10;width:100%;object-fit:cover;background:linear-gradient(125deg,#ffead5,#f7d6b5)}
+.photo-fallback{aspect-ratio:16/10;display:grid;place-items:center;background:linear-gradient(130deg,#fff1e4,#f9c99a);font-size:48px;color:var(--main)}
+.tile-body{padding:21px}.tile h3{font:700 18px var(--head);margin:5px 0 10px}.tile p{line-height:1.7;color:var(--ink-light);font-size:13px;overflow-wrap:anywhere}
+.tile .meta{color:var(--orange-dark);font-size:12px;font-weight:700}.tile .more{margin-top:14px;color:var(--orange-dark);background:none;border:0;padding:0;font-weight:800}
+.tile .more:hover{text-decoration:underline}.simple-badge{display:inline-block;padding:5px 11px;border-radius:99px;background:var(--orange-soft);font-size:11px;font-weight:800;color:#803600}
+.empty{background:#FFF;border:1px dashed #dec7b5;border-radius:17px;text-align:center;color:#6D625A;padding:38px 18px;grid-column:1/-1}
+.agenda-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:25px}
+.calendar{background:#fff;border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:0 8px 28px #1919190a}
+.calendar-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.calendar-nav strong{font-family:var(--head)}
+.calendar-nav button{border:0;background:var(--orange-soft);padding:8px 13px;border-radius:9px;color:var(--main)}.calendar-nav button:hover{background:#ffc790}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.cal-label{text-align:center;font-size:11px;font-weight:700;color:#6b625a;padding:9px 0}
+.cal-day{height:42px;border:0;border-radius:11px;background:transparent;font-size:13px;color:var(--main);position:relative}
+.cal-day.has{background:#FFF0DE;font-weight:800}.cal-day.pentas{background:#FFCF98}.cal-day.current{outline:2px solid var(--orange-dark);outline-offset:-2px}
+.cal-day:not(:disabled):hover{background:#FFE3C3}.cal-day:disabled{background:transparent}
+.agenda-list{display:grid;align-content:start;gap:12px}.agenda-event{border-radius:17px;background:#fff;border:1px solid var(--line);padding:18px 20px;display:flex;gap:15px;align-items:flex-start}
+.date-box{flex:none;min-width:64px;padding:10px;border-radius:12px;background:var(--orange-soft);text-align:center;font-size:11px}
+.date-box strong{font:800 26px var(--head);display:block}.agenda-event h3{margin:0 0 6px;font:700 16px var(--head)}.agenda-event p{font-size:12px;color:var(--ink-light);line-height:1.7;margin:5px 0}
+.agenda-event a{font-size:12px;color:var(--orange-dark);font-weight:800}
+.legend{display:flex;gap:15px;margin-top:12px;font-size:11px;color:var(--ink-light)}.legend i{width:10px;height:10px;border-radius:3px;display:inline-block;background:#FFE5C8;border:1px solid #e99044;margin-right:4px}.legend i.pentas{background:#FFAE59}
+.spotlight{background:radial-gradient(circle at 90% 10%,#fa882a4a,transparent 42%),linear-gradient(135deg,#111111,#25211e);color:#FFF;border-radius:27px;padding:47px;display:flex;align-items:center;justify-content:space-between;gap:30px;position:relative;overflow:hidden}
+.spotlight h2{font:800 clamp(25px,3vw,38px) var(--head);max-width:670px;margin:0 0 13px}.spotlight p{color:#EFE2D9;line-height:1.8}.spotlight .cta{flex:none}
+.footer{background:#111111;color:#fff;padding:45px 0 25px;border-top:5px solid var(--orange)}
+.footer-in{display:flex;justify-content:space-between;gap:22px;flex-wrap:wrap}.footer h3{font:800 29px var(--head);margin:0}.footer p{color:#D6CFC8;font-size:13px}
+.doc-filters{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 22px}.doc-filters label{font-size:13px;font-weight:700;display:grid;gap:6px}.doc-filters select{background:#fff;border:1px solid #E6C4A3;border-radius:9px;padding:10px 12px;min-width:150px;color:#191919;font:inherit;cursor:pointer}
+.social{display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}.social a{border:1px solid #665B50;border-radius:10px;padding:9px 12px;font-size:12px;color:#FFF}.social a:hover{border-color:var(--orange);background:#F5822020}.external-news-link{color:#B65307;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}.external-source{display:inline-flex;align-items:center;background:#F58220;color:#191919;padding:10px 14px;border-radius:10px;font-weight:800;text-decoration:none;margin-top:10px}.external-source:hover{filter:brightness(1.06)}
+.copyright{border-top:1px solid #ffffff26;margin-top:30px;padding-top:20px;font-size:11px;color:#cfc4b9}
+.modal-shade{position:fixed;inset:0;background:#101010d8;z-index:100;display:flex;align-items:center;justify-content:center;padding:15px}
+.modal{background:var(--ivory);border-radius:20px;width:min(850px,100%);max-height:92vh;overflow:auto;padding:24px}
+.modal-title{display:flex;justify-content:space-between;align-items:center;gap:15px}.modal-title h2{font:700 25px var(--head);margin:0}
+.close{border:0;border-radius:10px;background:var(--orange-soft);padding:8px 13px;font-size:21px}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:20px}.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+.news-body{white-space:pre-wrap;line-height:1.85;color:#49413C}
+@media(max-width:800px){
+ .nav{display:none;position:absolute;left:0;right:0;top:79px;background:var(--ivory);padding:22px;box-shadow:0 10px 24px #19191922;flex-direction:column;align-items:stretch;gap:18px}.nav.open{display:flex}
+ .hamburger{display:block}.about-layout,.agenda-layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.section{padding:60px 0}.hero{min-height:570px;height:74svh}
+ .hero-shade{background:linear-gradient(0deg,#111111ee 0%,#111111c8 53%,#11111166 100%)}.slide-body{align-items:flex-end;padding-bottom:88px}.slide-content h1{font-size:clamp(32px,9vw,56px)}.section-title{align-items:start;flex-direction:column}
+ .spotlight{padding:31px;flex-direction:column;align-items:start}
+}
+@media(max-width:520px){.container{width:calc(100% - 28px)}.cards{grid-template-columns:1fr}.section{padding:47px 0}.hero{height:72svh;min-height:540px}.brand-title{font-size:19px}.header-in{min-height:72px}.nav{top:72px}.hero-progress{bottom:21px;left:18px}.hero-pause{bottom:13px;right:17px}.slide-content{padding-bottom:6px}.slide-content p{font-size:14px}.calendar{padding:14px}.cal-day{height:37px}.spotlight{padding:26px}.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* ARTAL V7 — halaman terpisah, tetapi tetap satu website/deployment */
+section[data-view][hidden]{display:none!important}
+.nav a[aria-current="page"]{color:var(--orange-dark)}
+.nav a[aria-current="page"]:after{width:100%}
+.detail-page{min-height:65vh;padding-top:45px}
+.detail-back{display:inline-flex;gap:8px;align-items:center;margin-bottom:24px;background:#FFF0DE;color:#623211;border:1px solid #F0C39B;border-radius:100px;padding:9px 16px;font-weight:700;font-size:13px}
+.detail-back:hover{background:#FFDAB4}
+.detail-panel{background:#FFF;border:1px solid var(--line);border-radius:22px;padding:clamp(18px,3.5vw,36px);box-shadow:0 10px 28px #1919190d}
+.detail-panel h1{font:800 clamp(26px,4vw,40px)/1.28 var(--head);margin:10px 0 14px}
+.detail-meta{font-size:13px;font-weight:700;color:#A94706}
+.detail-body{white-space:pre-wrap;line-height:1.9;overflow-wrap:anywhere;color:#49413C}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,245px),1fr));gap:17px;margin-top:24px}
+.detail-photo{margin:0;border:1px solid #EEE1D4;background:#FFFAF5;border-radius:14px;overflow:hidden}
+.detail-photo a{display:block}.detail-photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;cursor:zoom-in}
+.detail-photo figcaption{font-size:12px;font-weight:700;color:#51433A;padding:9px 12px}
+.detail-photo-error{display:grid;place-items:center;text-align:center;min-height:160px;padding:14px;font-size:13px;color:#7A5540;background:#FFF0DE}
+.detail-empty{background:#FFF0DE;color:#65401C;border-radius:12px;padding:16px;margin-top:18px}
+.detail-note{font-size:12px;color:#6A5B4C;margin-top:15px}
+.page-title-strip{display:flex;align-items:center;gap:12px;margin:0 0 22px}
+.page-title-strip:before{content:'';display:block;width:7px;height:38px;border-radius:4px;background:var(--orange)}
+@media(max-width:520px){.detail-grid{grid-template-columns:1fr 1fr;gap:9px}.detail-panel{padding:17px}.detail-photo figcaption{font-size:11px}.detail-photo-error{min-height:110px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container header-in"><a href="#/beranda" class="branding"><span id="brandIcon" class="brand-icon">A</span><span><span class="brand-title" id="brandTitle">ARTAL</span><span class="brand-sub" id="brandSub">KESENIAN MUSIK PATROL</span></span></a><button class="hamburger" id="hamburger" aria-label="Buka navigasi" aria-expanded="false">☰</button><nav class="nav" id="navigation"><a href="#/beranda">Beranda</a><a href="#/beranda/agenda">Agenda</a><a href="#/dokumentasi">Dokumentasi</a><a href="#/prestasi">Galeri Prestasi</a><a href="#/berita">Kabar ARTAL</a></nav></div></header>
+<main>
+<section data-view="home" id="home" class="hero" aria-label="Beranda Kesenian Musik Patrol ARTAL">
+  <div id="heroSlides" aria-hidden="true"></div>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="slide-body"><div class="container"><div class="slide-content">
+    <div id="heroIntro" class="overline">KESENIAN MUSIK PATROL</div>
+    <h1 id="heroHeadline">ARTAL</h1>
+    <p id="heroDescription">Tradisi Berirama, Generasi Berkarya.</p>
+    <a class="cta" href="#/beranda/tentang">Jelajahi ARTAL →</a>
+  </div></div></div>
+  <div id="heroCount" class="hero-progress" hidden aria-hidden="true"></div>
+  <button id="heroPause" class="hero-pause" type="button" hidden aria-label="Jeda pergantian foto">Jeda foto Ⅱ</button>
+</section>
+<section data-view="home" class="section" id="tentang"><div class="container about-layout"><div class="rhythm"><div class="beats" aria-hidden="true"></div><strong>ARTAL</strong><small>Irama yang menyatukan</small></div><div><span class="eyebrow">Mengenal ARTAL</span><h2 class="heading">Tradisi yang terus hidup bersama generasi muda.</h2><p id="aboutText" class="description">Memuat kisah ARTAL...</p><a href="#/dokumentasi" class="cta">Jelajahi Karya →</a></div></div></section>
+<section data-view="home" id="agenda" class="section alt"><div class="container"><div class="section-title"><div><span class="eyebrow">Jadwal Kegiatan</span><h2 class="heading">Agenda ARTAL</h2></div><p class="description">Latihan, penampilan, dan kegiatan musik patrol.</p></div><div class="agenda-layout"><div class="calendar"><div class="calendar-nav"><button id="calPrev" aria-label="Bulan sebelumnya">‹</button><strong id="calMonth"></strong><button id="calNext" aria-label="Bulan berikutnya">›</button></div><div class="cal-grid" id="calGrid"></div><div class="legend"><span><i></i> Latihan</span><span><i class="pentas"></i> Pentas</span></div></div><div class="agenda-list" id="agendaItems"><div class="empty">Memuat agenda...</div></div></div></div></section>
+<section data-view="docs" id="dokumentasi" class="section"><div class="container"><div class="section-title"><div><span class="eyebrow">Cerita dalam Gambar</span><h2 class="heading">Dokumentasi Kegiatan</h2></div><p class="description">Momen latihan, penampilan, dan kebersamaan.</p></div><div class="doc-filters" id="publicDocFilters"><label for="publicDocYear">Tahun <select id="publicDocYear"><option value="all">Semua Tahun</option></select></label><label for="publicDocMonth">Bulan <select id="publicDocMonth"><option value="all">Semua Bulan</option></select></label></div><div class="cards" id="albumGrid"></div></div></section>
+<section data-view="awards" id="prestasi" class="section alt"><div class="container"><div class="section-title"><div><span class="eyebrow">Jejak Kebanggaan</span><h2 class="heading">Galeri Prestasi</h2></div><p class="description">Penghargaan yang menjadi bagian perjalanan ARTAL.</p></div><div class="cards" id="awardGrid"></div></div></section>
+<section data-view="news" id="berita" class="section"><div class="container"><div class="section-title"><div><span class="eyebrow">Informasi Terbaru</span><h2 class="heading">Kabar ARTAL</h2></div><p class="description">Berita dan cerita dari kegiatan grup kesenian.</p></div><div class="cards" id="newsGrid"></div></div></section>
+<section data-view="home" id="kontak" class="section alt"><div class="container"><div class="spotlight"><div><h2>Hadirkan Irama ARTAL dalam acara Anda.</h2><p>Untuk informasi kegiatan atau undangan penampilan, hubungi pengurus ARTAL.</p></div><a class="cta" id="contactButton" href="#/beranda/kontak">Hubungi Pengurus →</a></div></div></section>
+<section id="detailPage" class="section detail-page" data-view="detail" hidden>
+  <div class="container">
+    <a id="detailBack" class="detail-back" href="#/dokumentasi">← Kembali ke Dokumentasi</a>
+    <div id="detailBody" aria-live="polite"></div>
+  </div>
+</section>
+</main>
+<footer class="footer"><div class="container"><div class="footer-in"><div><h3 id="footerBrand">ARTAL</h3><p id="footerNote">Kesenian Musik Patrol ARTAL</p><p id="footerAddress"></p></div><div><strong>Ikuti ARTAL</strong><div class="social" id="socialLinks"></div></div></div><div class="copyright">© <span id="year"></span> Kesenian Musik Patrol ARTAL. Dibuat untuk budaya dan kreativitas.</div></div></footer>
+<div id="modalHost"></div>
+<script>
+let SITE=null,slideIndex=0,slideTimer=null,paused=false,calDate=new Date(),selectedDate='',galleryYear='all',galleryMonth='all';
+const MONTH_LABELS=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+// Durasi mengikuti Pengaturan Admin; untuk data lama tetap 2 detik.
+const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const link=u=>/^https:\/\/[^\s<>"']+$/i.test(String(u||''))?h(u):'#';
+function richNewsText(text){
+  const chunks=String(text||'').split(/(https:\/\/[^\s<>"']+)/ig);
+  return chunks.map(piece=>{
+    if(!/^https:\/\//i.test(piece))return h(piece);
+    const match=piece.match(/^(.*?)([.,;!?)]*)$/);
+    const raw=(match&&match[1])||piece;
+    const tail=match?match[2]:'';
+    return `<a href="${link(raw)}" target="_blank" rel="noopener noreferrer" class="external-news-link">${h(raw)}</a>`+h(tail);
+  }).join('');
+}
+const dateLabel=s=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))return s||'';const [y,m,d]=s.split('-').map(Number);return new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'long',year:'numeric'}).format(new Date(y,m-1,d));};
+const simpleDate=s=>s?Number(s.slice(8,10))+' '+new Intl.DateTimeFormat('id-ID',{month:'short'}).format(new Date(+s.slice(0,4),+s.slice(5,7)-1,1)):'';
+const img=(u,alt)=>u?`<img class="photo" src="${link(u)}" alt="${h(alt)}" loading="lazy" referrerpolicy="no-referrer">`:'<div class="photo-fallback">♫</div>';
+function setTheme(s){const root=document.documentElement;Object.entries({main:s.primary,mint:s.accent,coral:s.coral,lavender:s.lavender,ivory:s.background,orange:s.accent,'orange-dark':'#A94706','orange-soft':'#FFF0DE',black:s.primary,head:s.font_title,body:s.font_body}).forEach(([k,v])=>root.style.setProperty('--'+k,['head','body'].includes(k)?`'${v}', sans-serif`:v));document.title=s.site_name||'ARTAL';document.getElementById('brandTitle').textContent=s.site_short||'ARTAL';document.getElementById('footerBrand').textContent=s.site_short||'ARTAL';if(s.logo){document.getElementById('brandIcon').innerHTML=`<img src="${link(s.logo)}" alt="Logo ARTAL">`;}if(s.favicon){let el=document.getElementById('dynamicFavicon');if(!el){el=document.createElement('link');el.id='dynamicFavicon';el.rel='icon';document.head.appendChild(el);}el.href=s.favicon;}document.getElementById('aboutText').textContent=s.about||s.description;document.getElementById('footerNote').textContent=s.footer_text||s.description;document.getElementById('footerAddress').textContent=s.address||'';let wa=(s.contact_whatsapp||'').replace(/[^0-9]/g,'');if(wa.startsWith('0'))wa='62'+wa.slice(1);const button=document.getElementById('contactButton');if(wa){button.href='https://wa.me/'+wa+'?text='+encodeURIComponent('Halo, saya ingin mengetahui informasi penampilan ARTAL.');button.target='_blank';button.rel='noopener noreferrer';}else{button.textContent='Informasi kontak segera tersedia';button.removeAttribute('href');button.style.opacity='.75';}const socials=[['YouTube',s.youtube],['Instagram',s.instagram],['Facebook',s.facebook],['TikTok',s.tiktok]].filter(x=>/^https:\/\//.test(x[1]||''));document.getElementById('socialLinks').innerHTML=socials.length?socials.map(([name,url])=>`<a target="_blank" rel="noopener noreferrer" href="${link(url)}" aria-label="Kunjungi akun ${name} ARTAL secara langsung">${name} ↗</a>`).join(''):'<span style="color:#bfcdd7;font-size:12px">Akun media sosial belum diatur.</span>';['about','agenda','documentation','achievements','news'].forEach(k=>{const id={about:'tentang',agenda:'agenda',documentation:'dokumentasi',achievements:'prestasi',news:'berita'}[k];document.getElementById(id).dataset.enabled=s['section_'+k]==='false'?'false':'true';});}
+function slideHtml(item,i){
+  const photo=item.image||'';
+  const mobile=item.mobile||photo;
+  // Foto adalah dekorasi latar. Teks utama tetap dan tidak berganti setiap slide.
+  if(!photo)return '';
+  return `<div class="hero-background ${i===slideIndex?'active':''}" data-background-index="${i}"><picture><source media="(max-width:800px)" srcset="${link(mobile)}"><img src="${link(photo)}" alt="" ${i===0?'fetchpriority="high"':'loading="eager"'} referrerpolicy="no-referrer"></picture></div>`;
+}
+function setHeroBackground(index){
+  if(!SITE)return;
+  const images=SITE.slides.filter(s=>s.image);
+  if(!images.length)return;
+  slideIndex=((index%images.length)+images.length)%images.length;
+  document.querySelectorAll('.hero-background').forEach((el,i)=>el.classList.toggle('active',i===slideIndex));
+  const count=document.getElementById('heroCount');
+  count.textContent=String(slideIndex+1).padStart(2,'0')+' / '+String(images.length).padStart(2,'0');
+}
+function drawSlides(){
+  const s=SITE.settings;
+  document.getElementById('heroIntro').textContent=s.hero_intro||'KESENIAN MUSIK PATROL';
+  document.getElementById('heroHeadline').textContent=s.slogan||'Satu Irama, Sejuta Semangat';
+  document.getElementById('heroDescription').textContent=s.description||'Selamat datang di Kesenian Musik Patrol ARTAL.';
+  const images=SITE.slides.filter(s=>s.image);
+  slideIndex=0;
+  document.getElementById('heroSlides').innerHTML=images.map(slideHtml).join('');
+  document.getElementById('heroCount').hidden=images.length<2;
+  document.getElementById('heroPause').hidden=images.length<2;
+  if(images.length)setHeroBackground(0);
+}
+function resetSlides(){
+  clearInterval(slideTimer);slideTimer=null;
+  if(!SITE||SITE.slides.filter(s=>s.image).length<2)return;
+  const reduceMotion=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(paused||reduceMotion||document.hidden)return;
+  const seconds=Number(SITE.settings.hero_interval_seconds);
+  const intervalSeconds=Number.isInteger(seconds)&&seconds>=2&&seconds<=10?seconds:2;
+  slideTimer=setInterval(()=>setHeroBackground(slideIndex+1),intervalSeconds*1000);
+}
+function agendaCard(a){return `<article class="agenda-event"><div class="date-box"><strong>${h(a.date.slice(8,10)||'–')}</strong>${h(simpleDate(a.date).replace(/^\d+\s*/,''))}</div><div><h3>${h(a.title)}</h3><span class="simple-badge">${h(a.type)}</span><p>🕒 ${h(a.time||'Jam belum ditentukan')}${a.end_time?'–'+h(a.end_time):''} WIB</p><p>📍 ${h(a.location||'Lokasi menyusul')}</p>${a.description?`<p>${h(a.description)}</p>`:''}${a.maps_url?`<a href="${link(a.maps_url)}" target="_blank" rel="noopener noreferrer">Lihat lokasi ↗</a>`:''}</div></article>`;}
+const isoDate=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+function drawAgenda(){const y=calDate.getFullYear(),m=calDate.getMonth(),month=new Intl.DateTimeFormat('id-ID',{month:'long',year:'numeric'}).format(calDate);document.getElementById('calMonth').textContent=month;const first=(new Date(y,m,1).getDay()+6)%7;const days=new Date(y,m+1,0).getDate();let html=['Sen','Sel','Rab','Kam','Jum','Sab','Min'].map(n=>`<span class="cal-label">${n}</span>`).join('');for(let i=0;i<first;i++)html+='<span></span>';for(let d=1;d<=days;d++){const date=isoDate(y,m,d),events=SITE.agendas.filter(a=>a.date===date),has=events.length;html+=`<button class="cal-day ${has?'has':''} ${events.some(a=>a.type==='pentas')?'pentas':''} ${date===selectedDate?'current':''}" data-date="${date}" aria-label="${h(dateLabel(date))}, ${has} agenda">${d}${has?' •':''}</button>`;}document.getElementById('calGrid').innerHTML=html;document.querySelectorAll('[data-date]').forEach(el=>el.onclick=()=>{selectedDate=el.dataset.date;drawAgenda();});let agendas=[];if(selectedDate)agendas=SITE.agendas.filter(a=>a.date===selectedDate);else{const now=new Date(),today=isoDate(now.getFullYear(),now.getMonth(),now.getDate());agendas=SITE.agendas.filter(a=>a.date>=today).slice(0,4);}document.getElementById('agendaItems').innerHTML=agendas.length?agendas.map(agendaCard).join(''):`<div class="empty">${selectedDate?'Tidak ada jadwal pada '+h(dateLabel(selectedDate))+'.':'Belum ada agenda mendatang yang dipublikasikan.'}</div>`;}
+function genericCard(image,title,meta,desc,action,label){return `<article class="tile">${img(image,title)}<div class="tile-body"><span class="meta">${h(meta)}</span><h3>${h(title)}</h3><p>${h(String(desc||'').slice(0,135))}</p><button class="more" data-action="${action}" data-id="${h(label)}">Lihat Selengkapnya →</button></div></article>`;}
+function drawGalleryFilters(){
+  if(!SITE)return;
+  const y=document.getElementById('publicDocYear');
+  const m=document.getElementById('publicDocMonth');
+  const years=[...new Set(SITE.albums.map(a=>(a.date||'').slice(0,4)).filter(v=>/^20\d{2}$/.test(v)))].sort().reverse();
+  y.innerHTML='<option value="all">Semua Tahun</option>'+years.map(v=>`<option value="${v}">${v}</option>`).join('');
+  m.innerHTML='<option value="all">Semua Bulan</option>'+MONTH_LABELS.map((v,i)=>`<option value="${String(i+1).padStart(2,'0')}">${v}</option>`).join('');
+  y.value=years.includes(galleryYear)?galleryYear:'all';
+  if(y.value==='all')galleryYear='all';
+  m.value=galleryMonth;
+  y.onchange=()=>{galleryYear=y.value;drawAlbumGallery();};
+  m.onchange=()=>{galleryMonth=m.value;drawAlbumGallery();};
+}
+function drawAlbumGallery(){
+  const albums=SITE.albums.filter(a=>(galleryYear==='all'||(a.date||'').startsWith(galleryYear+'-'))&&(galleryMonth==='all'||(a.date||'').slice(5,7)===galleryMonth));
+  const grid=document.getElementById('albumGrid');
+  grid.innerHTML=albums.length?albums.map(a=>genericCard(a.cover||a.photos[0],a.title,(a.category||'Dokumentasi')+' • '+dateLabel(a.date),a.description,'album',a.id)).join(''):'<div class="empty">Tidak ada dokumentasi untuk tahun/bulan yang dipilih.</div>';
+  grid.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.action,b.dataset.id)));
+}
+function drawGrids(){
+  drawGalleryFilters();drawAlbumGallery();
+  const awards=document.getElementById('awardGrid'),news=document.getElementById('newsGrid');
+  awards.innerHTML=SITE.achievements.length?SITE.achievements.map(a=>genericCard(a.image,a.title,(a.rank||'Prestasi')+' • '+(a.year||''),a.description,'award',a.id)).join(''):'<div class="empty">Galeri prestasi akan ditampilkan setelah pengurus mengunggahnya.</div>';
+  news.innerHTML=SITE.news.length?SITE.news.map(a=>genericCard(a.image,a.title,dateLabel(a.date),a.body,'news',a.id)).join(''):'<div class="empty">Belum ada berita ARTAL yang diterbitkan.</div>';
+  [awards,news].forEach(el=>el.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.action,b.dataset.id))));
+}
+function detailRoute(kind,id){
+  const prefix={album:'dokumentasi',award:'prestasi',news:'berita'}[kind];
+  if(!prefix)return;
+  const target='#/'+prefix+'/'+encodeURIComponent(id);
+  if(location.hash===target)routePage();else location.hash=target;
+}
+function photoGalleryMarkup(photos,title){
+  const unique=[...new Set((Array.isArray(photos)?photos:[]).filter(Boolean))];
+  if(!unique.length)return '<div class="detail-empty">Belum ada foto yang tertaut pada album ini. Foto yang sudah diunggah tetap tersimpan di Google Drive; pengurus dapat memilihnya lagi pada menu Dokumentasi → Edit Album.</div>';
+  return `<div class="detail-grid">${unique.map((url,i)=>`<figure class="detail-photo"><a href="${link(url)}" target="_blank" rel="noopener noreferrer" aria-label="Buka foto ${i+1} ${h(title)}"><img loading="lazy" src="${link(url)}" referrerpolicy="no-referrer" alt="${h(title)} - foto ${i+1}"></a><figcaption>Foto ${i+1} dari ${unique.length} ↗</figcaption></figure>`).join('')}</div>`;
+}
+function renderDetail(kind,id){
+  const item=kind==='album'?SITE.albums.find(a=>a.id===id):kind==='award'?SITE.achievements.find(a=>a.id===id):SITE.news.find(a=>a.id===id);
+  const prefix={album:'dokumentasi',award:'prestasi',news:'berita'}[kind]||'beranda';
+  const back=document.getElementById('detailBack');
+  back.href='#/'+prefix;back.textContent='← Kembali ke '+({album:'Dokumentasi',award:'Galeri Prestasi',news:'Kabar ARTAL'}[kind]||'Beranda');
+  const target=document.getElementById('detailBody');
+  if(!item){target.innerHTML='<div class="detail-empty">Konten ini tidak ditemukan atau belum diterbitkan.</div>';return;}
+  const photos=kind==='album'?item.photos:kind==='award'?(item.image?[item.image]:[]):(item.image?[item.image]:[]);
+  const meta=kind==='album'?(item.category||'Dokumentasi')+' • '+dateLabel(item.date)+' • '+photos.length+' foto':kind==='award'?(item.rank||'Prestasi')+' • '+(item.year||'')+' • '+(item.location||''):dateLabel(item.date);
+  const story=kind==='news'?richNewsText(item.body):h(item.description||'');
+  const external=kind==='news'&&item.external_url&&link(item.external_url)!=='#'?`<p><a class="external-source" href="${link(item.external_url)}" target="_blank" rel="noopener noreferrer">${h(item.external_label||'Buka sumber berita')} ↗</a></p>`:'';
+  target.innerHTML=`<article class="detail-panel"><div class="detail-meta">${h(meta)}</div><h1>${h(item.title)}</h1>${story?`<div class="detail-body">${story}</div>`:''}${external}${photoGalleryMarkup(photos,item.title)}${kind==='album'?'<p class="detail-note">Klik foto untuk melihat ukuran lebih besar di tab baru. Jika sebuah foto gagal ditampilkan, minta pengurus memeriksa izin berbagi file Google Drive.</p>':''}</article>`;
+  target.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{
+    const a=img.closest('a');if(!a)return;
+    a.innerHTML='<div class="detail-photo-error">Foto belum bisa dimuat. Periksa izin berbagi file di Google Drive.</div>';
+  },{once:true}));
+}
+function routePage(){
+  if(!SITE)return;
+  let raw=(location.hash||'').replace(/^#\/?/,'');try{raw=decodeURIComponent(raw);}catch(_e){raw='beranda';}
+  const segments=raw.split('/').filter(Boolean),page=segments[0]||'beranda';
+  const isDoc=page==='dokumentasi',isAward=page==='prestasi',isNews=page==='berita';
+  const targetView=segments[1]&&(isDoc||isAward||isNews)?'detail':isDoc?'docs':isAward?'awards':isNews?'news':'home';
+  document.querySelectorAll('main section[data-view]').forEach(section=>{
+    const enabled=section.dataset.enabled!=='false';
+    section.hidden=section.dataset.view!==targetView||!enabled;
+  });
+  if(targetView==='detail')renderDetail(isDoc?'album':isAward?'award':'news',segments[1]);
+  document.querySelectorAll('#navigation a').forEach(a=>{
+    const active=a.getAttribute('href')?.startsWith('#/'+(targetView==='home'?'beranda':isDoc?'dokumentasi':isAward?'prestasi':'berita'));
+    if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+  });
+  const nav=document.getElementById('navigation');nav.classList.remove('open');document.getElementById('hamburger').setAttribute('aria-expanded','false');
+  // Support older links and agenda/about deep linking on the dashboard.
+  const anchor=targetView==='home'?(segments[1]||(['agenda','tentang','kontak','home'].includes(page)?page:'')):'';
+  requestAnimationFrame(()=>{
+    if(anchor&&document.getElementById(anchor))document.getElementById(anchor).scrollIntoView({block:'start'});
+    else window.scrollTo(0,0);
+  });
+}
+function openDetail(kind,id){detailRoute(kind,id);}
+function closeDetail(){if(location.hash.startsWith('#/dokumentasi/'))location.hash='#/dokumentasi';else if(location.hash.startsWith('#/prestasi/'))location.hash='#/prestasi';else if(location.hash.startsWith('#/berita/'))location.hash='#/berita';}
+function initSite(data){SITE=data;setTheme(data.settings);document.getElementById('year').textContent=new Date().getFullYear();document.querySelector('.beats').innerHTML=[20,40,28,55,35,70,30,52,38,25,44,21].map((v,i)=>`<i style="height:${v}px;background:${i%3?'var(--orange)':'var(--coral)'}"></i>`).join('');drawSlides();resetSlides();drawAgenda();drawGrids();routePage();}
+document.getElementById('hamburger').addEventListener('click',()=>{const el=document.getElementById('navigation');el.classList.toggle('open');document.getElementById('hamburger').setAttribute('aria-expanded',el.classList.contains('open'));});document.querySelectorAll('#navigation a').forEach(a=>a.addEventListener('click',()=>{document.getElementById('navigation').classList.remove('open');document.getElementById('hamburger').setAttribute('aria-expanded','false');}));
+document.getElementById('heroPause').addEventListener('click',e=>{
+  paused=!paused;
+  e.currentTarget.textContent=paused?'Putar foto ▶':'Jeda foto Ⅱ';
+  e.currentTarget.setAttribute('aria-label',paused?'Lanjutkan pergantian foto':'Jeda pergantian foto');
+  // Dalam mode reduced motion, gambar tetap diam sesuai pengaturan aksesibilitas perangkat.
+  resetSlides();
+});
+document.addEventListener('visibilitychange',resetSlides);
+window.addEventListener('hashchange',routePage);
+document.getElementById('calPrev').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()-1,1);selectedDate='';drawAgenda();};document.getElementById('calNext').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()+1,1);selectedDate='';drawAgenda();};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
+// ARTAL V8 - Data hanya berasal dari snapshot publik yang disinkronkan via GitHub.
+async function loadArtalGithubData(){
+  try{
+    const response=await fetch('./data/site.json?update='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('HTTP '+response.status+' saat mengambil data publik');
+    const data=await response.json();
+    if(!data || !data.settings || !Array.isArray(data.albums) || !Array.isArray(data.slides) || !Array.isArray(data.agendas) || !Array.isArray(data.news) || !Array.isArray(data.achievements))
+      throw new Error('Format data ARTAL tidak sesuai');
+    initSite(data);
+  }catch(err){
+    const host=document.getElementById('heroSlides');
+    host.innerHTML='<div class="container" style="position:relative;z-index:2;color:white;padding:65px 0"><h1>ARTAL</h1><p>Data publik belum tersedia. Periksa sinkronisasi GitHub.</p><button type="button" id="retryArtal" style="background:#F58220;border:0;padding:11px 18px;border-radius:9px;font-weight:700">Coba lagi</button></div>';
+    document.getElementById('retryArtal').addEventListener('click',loadArtalGithubData);
+    console.error('ARTAL data load error:',err.message);
+  }
+}
+loadArtalGithubData();
+</script>
+</body>
+</html>
