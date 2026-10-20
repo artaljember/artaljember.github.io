@@ -1,35 +1,104 @@
-{
-  "settings": {
-    "site_name": "Kesenian Musik Patrol ARTAL",
-    "site_short": "ARTAL",
-    "slogan": "Satu Irama, Sejuta Semangat",
-    "hero_intro": "Tradisi Berirama · Generasi Berkarya",
-    "description": "Kesenian Musik Patrol ARTAL",
-    "about": "Dokumentasi dan kegiatan resmi ARTAL akan tampil setelah sinkronisasi pertama.",
-    "primary": "#191919",
-    "accent": "#F58220",
-    "coral": "#FFBE7B",
-    "lavender": "#39332F",
-    "background": "#FFFAF5",
-    "font_title": "Poppins",
-    "font_body": "Plus Jakarta Sans",
-    "hero_interval_seconds": "2",
-    "section_about": "true",
-    "section_agenda": "true",
-    "section_documentation": "true",
-    "section_achievements": "true",
-    "section_news": "true",
-    "logo": "",
-    "favicon": "",
-    "contact_whatsapp": "",
-    "youtube": "",
-    "facebook": "",
-    "instagram": "",
-    "tiktok": ""
-  },
-  "slides": [],
-  "agendas": [],
-  "albums": [],
-  "achievements": [],
-  "news": []
+      "date": "2024-06-04",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1tU-lxIGadGh36H-Jf82r7rxHcKFB7YuF&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1tU-lxIGadGh36H-Jf82r7rxHcKFB7YuF&sz=w1200"
+      ],
+      "photo_count": 1
+    },
+    {
+      "id": "65b3484f-aead-4755-8b1d-2ce8ebc6a0ee",
+      "title": "ISHARI",
+      "category": "Personel",
+      "date": "2024-04-07",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1jl2p0DEF4Gsq1WiER1MpKLimF-aaJGQX&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1jl2p0DEF4Gsq1WiER1MpKLimF-aaJGQX&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1OC5YHpvkJ4eqMtPsNWHmg73gctWjKJpm&sz=w1200"
+      ],
+      "photo_count": 2
+    },
+    {
+      "id": "0792fc7f-6643-44d8-909b-4b497f6ed985",
+      "title": "Karnaval UNEJ",
+      "category": "Show",
+      "date": "2024-03-31",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1vVYrL-CzXCoChgXkwXG4aB5DYKC7czc6&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1vVYrL-CzXCoChgXkwXG4aB5DYKC7czc6&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1H1FhTqP_dwf6hRQgu4onEmgLkKNUpoMA&sz=w1200"
+      ],
+      "photo_count": 2
+    },
+    {
+      "id": "725f1614-8ec5-4271-80a5-f2f7daf721fd",
+      "title": "Patrol-JAMBORE",
+      "category": "Show",
+      "date": "2023-07-08",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1O3sJ80uA1uwOmnmuH0G3jLq6WUdS8I6J&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1O3sJ80uA1uwOmnmuH0G3jLq6WUdS8I6J&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1z4jW_VF8BcGXAUPQYEgn4lWMekaI8LMv&sz=w1200"
+      ],
+      "photo_count": 2
+    },
+    {
+      "id": "1c853cca-4399-4faa-b16f-c20d4ac61041",
+      "title": "PARANADA",
+      "category": "Show",
+      "date": "2023-01-02",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1INjHStWQjUHh2rnA7R78GETtfkonNPLJ&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1INjHStWQjUHh2rnA7R78GETtfkonNPLJ&sz=w1200",
+        "https://drive.google.com/thumbnail?id=15uaP1xo9fHqEYjoytK1korlkK8ZLW3n9&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1u30FqwyQ0xDOB3YVK_UUfgUpMejOJZMZ&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1KTu9_yiUqs3URXJXUj3oUxlHji8NJoe8&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1CHT485Y9o7cRy6yC-uNU8Kk139zwoSU-&sz=w1200",
+        "https://drive.google.com/thumbnail?id=133Oux3Yqn62zMMJugJUHWiEYgabDvt6I&sz=w1200",
+        "https://drive.google.com/thumbnail?id=10Qd0UpglfVBgRSmcZeKWnS9Jvs219_D9&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1DO08LkQisVeno7Uiu8uho-zh8FeDujGc&sz=w1200"
+      ],
+      "photo_count": 8
+    },
+    {
+      "id": "651bce40-fe10-409a-95af-3e7f1e23fb91",
+      "title": "Patrol-Alun-Alun",
+      "category": "Show",
+      "date": "2022-10-02",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1E36qUcwvd32d5MGeIUQWCI5GzoCvkPyd&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1E36qUcwvd32d5MGeIUQWCI5GzoCvkPyd&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1_fMtNBq0WylrnbZ9Vd5Jk6yOQcEy-xor&sz=w1200"
+      ],
+      "photo_count": 2
+    }
+  ],
+  "achievements": [
+    {
+      "id": "bea45802-f123-4878-9dad-2606a0c52934",
+      "title": "All",
+      "rank": "",
+      "year": "",
+      "location": "",
+      "description": "All Piala ARTAL",
+      "featured": false,
+      "image": "https://drive.google.com/thumbnail?id=1nIWs_5NeoVywV3wsBSp815mwHKfSr8QC&sz=w640"
+    }
+  ],
+  "news": [
+    {
+      "id": "acac8136-b53a-4422-96dd-a8762e37bfd2",
+      "title": "NAPAS JEKI | Kisah di Balik Budaya yang Terus Hidup",
+      "date": "2026-10-15",
+      "body": "BY : KIM JEKI\n\nBudaya bukan sekadar warisan masa lalu. Ia adalah identitas, cerita, dan napas kehidupan yang terus mengalir dari generasi ke generasi.\n\nDi tengah perkembangan zaman, ketika banyak hal berubah dan perhatian generasi mulai beralih, masih ada tradisi yang bertahan, masih ada masyarakat yang menjaga, dan masih ada semangat untuk memastikan budaya tidak sekadar menjadi kenangan.\n\nNAPAS JEKI hadir untuk mengajak kita melihat lebih dekat kisah di balik budaya yang terus hidup di Jember Kidul. Sebuah perjalanan untuk mengenal, menghargai, dan merawat kekayaan budaya lokal yang menjadi bagian dari identitas kita bersama.\n\nDari irama Seni Patrol Artal hingga berbagai kesenian dan tradisi yang tumbuh di tengah masyarakat, setiap langkah, bunyi, dan gerakan menyimpan cerita yang layak untuk dikenal lebih luas.\n\nFilm ini bukan hanya tentang budaya yang kita lihat hari ini, tetapi juga tentang tanggung jawab kita untuk menjaganya esok hari.\nSebab, budaya akan tetap hidup bukan hanya karena pernah diwariskan, melainkan karena masih ada yang mau mengenal, mencintai, dan melestarikannya.\nJember Kidul punya cerita. Jember Kidul punya budaya. Dan selama masih ada yang menjaga, napas itu akan terus ada.",
+      "image": "https://drive.google.com/thumbnail?id=1dratdcF-NHUDgEZE73GR7CE3saPn-iAq&sz=w640",
+      "external_url": "https://www.youtube.com/watch?v=MAN_5KsDQBo&t=85s",
+      "external_label": "Klik Link"
+    }
+  ]
 }
