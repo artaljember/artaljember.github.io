@@ -1,0 +1,115 @@
+# ARTAL V8.2 — Sinkronisasi otomatis tanpa Personal Access Token
+# Nama file ketika dibuat di GitHub:
+# .github/workflows/sinkron-artal.yml
+# Sebelum menjalankan: buat Repository variable bernama ARTAL_JSON_URL
+# berisi URL /exec dari Apps Script ARTAL - SINKRONISASI PUBLIK.
+# Set Settings > Pages > Source: GitHub Actions.
+
+name: Sinkronisasi ARTAL ke GitHub Pages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17,47 * * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - '.nojekyll'
+      - '.github/workflows/sinkron-artal.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: artal-github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Ambil data dan siapkan website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil kode website ARTAL
+        uses: actions/checkout@v4
+
+      - name: Ambil JSON terbit dari Apps Script
+        env:
+          ARTAL_JSON_URL: ${{ vars.ARTAL_JSON_URL }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${ARTAL_JSON_URL}" ]; then
+            echo '::error::Variable ARTAL_JSON_URL belum diatur di Settings > Secrets and variables > Actions > Variables.'
+            exit 1
+          fi
+          mkdir -p _site/data
+          curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
+            --fail --location --silent --show-error \
+            --retry 3 --connect-timeout 15 --max-time 90 \
+            "$ARTAL_JSON_URL" --output _site/data/site.json
+
+      - name: Validasi data JSON sebelum dipublikasikan
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('_site/data/site.json')
+          if not path.exists() or path.stat().st_size > 5_000_000:
+              raise SystemExit('Gagal: file JSON kosong/hilang/terlalu besar.')
+          try:
+              data = json.loads(path.read_text(encoding='utf-8'))
+          except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+              raise SystemExit('Gagal: respons Apps Script bukan JSON yang valid. ' + str(exc))
+          required = {
+              'settings': dict,
+              'slides': list,
+              'agendas': list,
+              'albums': list,
+              'achievements': list,
+              'news': list,
+          }
+          if not isinstance(data, dict) or set(data) != set(required):
+              raise SystemExit('Gagal: struktur JSON tidak sesuai skema publik ARTAL.')
+          for key, expected in required.items():
+              if not isinstance(data[key], expected):
+                  raise SystemExit('Gagal: tipe data ' + key + ' tidak sesuai.')
+          if not data['settings'].get('site_name'):
+              raise SystemExit('Gagal: identitas website belum tersedia.')
+          print('Data ARTAL valid dan aman untuk tahap publikasi.')
+          for key in ('slides', 'agendas', 'albums', 'achievements', 'news'):
+              print(key + ': ' + str(len(data[key])))
+          PY
+
+      - name: Siapkan file website untuk diterbitkan
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html || { echo '::error::index.html tidak ditemukan pada direktori utama.'; exit 1; }
+          cp index.html _site/index.html
+          if [ -f .nojekyll ]; then cp .nojekyll _site/.nojekyll; fi
+
+      - name: Siapkan GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload berkas website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    name: Terbitkan website ARTAL
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Terbitkan ke GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
