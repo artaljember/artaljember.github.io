@@ -312,20 +312,69 @@ document.getElementById('heroPause').addEventListener('click',e=>{
 document.addEventListener('visibilitychange',resetSlides);
 window.addEventListener('hashchange',routePage);
 document.getElementById('calPrev').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()-1,1);selectedDate='';drawAgenda();};document.getElementById('calNext').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()+1,1);selectedDate='';drawAgenda();};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
-// ARTAL V8 - Data hanya berasal dari snapshot publik yang disinkronkan via GitHub.
-async function loadArtalGithubData(){
-  try{
-    const response=await fetch('./data/site.json?update='+Date.now(),{cache:'no-store'});
-    if(!response.ok)throw new Error('HTTP '+response.status+' saat mengambil data publik');
-    const data=await response.json();
-    if(!data || !data.settings || !Array.isArray(data.albums) || !Array.isArray(data.slides) || !Array.isArray(data.agendas) || !Array.isArray(data.news) || !Array.isArray(data.achievements))
-      throw new Error('Format data ARTAL tidak sesuai');
+// ARTAL V9 — LANGSUNG KE APPS SCRIPT VIA JSONP, tanpa CSV dan GitHub Actions.
+// Browser mengunduh hanya data berstatus terbit dari API Apps Script publik.
+const ARTAL_LIVE_API_URL = 'https://script.google.com/macros/s/AKfycbwOANKRtSk64mIPSpwfuzYRyGPoSaEi363cD0WPzgJbQWwpZfF3jDetmXiCurE6mI19/exec';
+function validArtalSite(data) {
+  return !!(data && typeof data.settings === 'object' && data.settings &&
+    Array.isArray(data.slides) && Array.isArray(data.agendas) &&
+    Array.isArray(data.albums) && Array.isArray(data.achievements) &&
+    Array.isArray(data.news));
+}
+function loadArtalLiveJsonp() {
+  return new Promise((resolve,reject) => {
+    const script = document.createElement('script');
+    let completed = false;
+    let timer;
+    const clean = () => {
+      clearTimeout(timer);
+      if (script.parentNode) script.parentNode.removeChild(script);
+      delete window.artalPublicJsonp;
+    };
+    const fail = (message) => {
+      if (completed) return;
+      completed = true; clean(); reject(new Error(message));
+    };
+    window.artalPublicJsonp = (data) => {
+      if (completed) return;
+      completed = true; clean();
+      if (!validArtalSite(data)) {
+        reject(new Error((data && data.error) || 'Format JSONP ARTAL tidak valid'));
+        return;
+      }
+      resolve(data);
+    };
+    timer = setTimeout(() => fail('Timeout ketika mengambil data ARTAL dari Apps Script'), 20000);
+    script.async = true;
+    script.onerror = () => fail('Gagal memuat JSONP publik ARTAL');
+    script.src = ARTAL_LIVE_API_URL + '?callback=artalPublicJsonp&ts=' + Date.now();
+    document.head.appendChild(script);
+  });
+}
+async function loadArtalGithubData() {
+  let firstError;
+  try {
+    const data = await loadArtalLiveJsonp();
     initSite(data);
-  }catch(err){
-    const host=document.getElementById('heroSlides');
-    host.innerHTML='<div class="container" style="position:relative;z-index:2;color:white;padding:65px 0"><h1>ARTAL</h1><p>Data publik belum tersedia. Periksa sinkronisasi GitHub.</p><button type="button" id="retryArtal" style="background:#F58220;border:0;padding:11px 18px;border-radius:9px;font-weight:700">Coba lagi</button></div>';
+    console.info('ARTAL: data terbaru langsung dari Apps Script.');
+    return;
+  } catch (err) {
+    firstError = err;
+    console.warn('ARTAL: Apps Script tidak dapat diakses; mencoba data cadangan GitHub.',err.message);
+  }
+  try {
+    const response = await fetch('./data/site.json?fallback=' + Date.now(),{cache:'no-store'});
+    if (!response.ok) throw new Error('HTTP '+response.status);
+    const data = await response.json();
+    if (!validArtalSite(data)) throw new Error('Format data cadangan tidak valid');
+    initSite(data);
+    console.info('ARTAL: menampilkan data cadangan; data baru akan dimuat saat pengunjung membuka ulang halaman.');
+    return;
+  } catch (err) {
+    const host = document.getElementById('heroSlides');
+    host.innerHTML = '<div class="container" style="position:relative;z-index:2;color:white;padding:65px 0"><h1>ARTAL</h1><p>Data publik belum tersedia. Silakan coba lagi.</p><button type="button" id="retryArtal" style="background:#F58220;border:0;padding:11px 18px;border-radius:9px;font-weight:700">Coba lagi</button></div>';
     document.getElementById('retryArtal').addEventListener('click',loadArtalGithubData);
-    console.error('ARTAL data load error:',err.message);
+    console.error('ARTAL: sumber utama dan cadangan gagal:',firstError.message,err.message);
   }
 }
 loadArtalGithubData();
