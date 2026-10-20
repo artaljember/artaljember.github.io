@@ -1,9 +1,3 @@
-# ARTAL V8.3 — Perbaikan sinkronisasi GitHub Pages tanpa Personal Access Token.
-# Tempel seluruh isi ini ke: .github/workflows/sinkron-artal.yml
-# Tidak perlu mengubah Apps Script Admin, Google Sheets, atau Google Drive.
-
-name: Sinkronisasi ARTAL ke GitHub Pages
-
 on:
   workflow_dispatch:
   schedule:
@@ -33,73 +27,100 @@ jobs:
       - name: Ambil kode website ARTAL
         uses: actions/checkout@v4
 
-      - name: Ambil dan validasi JSON Apps Script dengan percobaan ulang
+      - name: Ambil JSON dan periksa domain akhir Google
         env:
           ARTAL_JSON_URL: ${{ vars.ARTAL_JSON_URL }}
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -z "${ARTAL_JSON_URL:-}" ]]; then
-            echo '::error::Repository variable ARTAL_JSON_URL belum diisi.'
-            exit 1
-          fi
-          if [[ ! "$ARTAL_JSON_URL" =~ ^https://script\.google\.com/macros/s/[^/]+/exec([?].*)?$ ]]; then
-            echo '::error::ARTAL_JSON_URL harus berupa URL Apps Script /exec, bukan /dev, GitHub, atau URL redirect sementara.'
-            exit 1
-          fi
-
           mkdir -p _site/data
-          found=false
-          for attempt in 1 2 3 4 5 6 7 8; do
-            echo "Meminta JSON ARTAL — percobaan ${attempt}/8"
-            temp_file="$(mktemp)"
-            http_code="$(curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
-              --location --silent --show-error \
-              --connect-timeout 15 --max-time 75 \
-              --header 'Accept: application/json,text/plain,*/*' \
-              --user-agent 'ARTAL-Public-GitHubPages-Sync/8.3' \
-              --output "$temp_file" --write-out '%{http_code}' \
-              "$ARTAL_JSON_URL" || true)"
+          python3 - <<'PY'
+          import json, os, pathlib, re, sys, time
+          import urllib.request, urllib.error, urllib.parse
 
-            if python3 - "$temp_file" <<'PY'
-          import json, pathlib, sys
-          path = pathlib.Path(sys.argv[1])
-          try:
-              if path.stat().st_size == 0 or path.stat().st_size > 5_000_000:
-                  sys.exit(1)
-              d = json.loads(path.read_text(encoding='utf-8-sig'))
-              expected = {'settings': dict, 'slides': list, 'agendas': list, 'albums': list, 'achievements': list, 'news': list}
-              if not isinstance(d, dict) or set(d) != set(expected):
-                  sys.exit(1)
-              if any(not isinstance(d[k], typ) for k, typ in expected.items()):
-                  sys.exit(1)
-              if not d['settings'].get('site_name'):
-                  sys.exit(1)
-          except (OSError, UnicodeError, ValueError, KeyError, TypeError):
-              sys.exit(1)
+          url = os.environ.get('ARTAL_JSON_URL', '').strip()
+          if not re.fullmatch(r'https://script\.google\.com/macros/s/[^/]+/exec(?:\?.*)?', url):
+              sys.exit('::error::ARTAL_JSON_URL harus URL Apps Script /exec. Periksa Repository Variables.')
+
+          expected = {'settings': dict, 'slides': list, 'agendas': list,
+                      'albums': list, 'achievements': list, 'news': list}
+          last = 'Tidak ada respons yang berhasil'
+
+          def fetch(target):
+              req = urllib.request.Request(target, headers={
+                  'Accept': 'application/json,text/plain,*/*',
+                  'User-Agent': 'Mozilla/5.0 (compatible; ARTAL-Public-Sync/8.4)'
+              })
+              try:
+                  with urllib.request.urlopen(req, timeout=75) as resp:
+                      return (resp.status, resp.geturl(), resp.headers.get_content_type(), resp.read(5_000_001))
+              except urllib.error.HTTPError as err:
+                  return (err.code, err.geturl(), err.headers.get_content_type(), err.read(2048))
+
+          def parse(payload):
+              if not payload or len(payload) > 5_000_000:
+                  raise ValueError('kosong atau terlalu besar')
+              data = json.loads(payload.decode('utf-8-sig'))
+              if not isinstance(data, dict) or set(data) != set(expected):
+                  raise ValueError('struktur objek JSON tidak sesuai')
+              if any(not isinstance(data[k], typ) for k, typ in expected.items()):
+                  raise ValueError('jenis data JSON tidak sesuai')
+              if not data['settings'].get('site_name'):
+                  raise ValueError('nama situs kosong')
+              return data
+
+          for attempt in range(1, 5):
+              print(f'Meminta data ARTAL — percobaan {attempt}/4', flush=True)
+              try:
+                  code, final, ctype, payload = fetch(url)
+              except Exception as exc:
+                  last = f'Koneksi gagal ({type(exc).__name__})'
+                  print('Diagnostik:', last, flush=True)
+                  if attempt < 4: time.sleep(6)
+                  continue
+
+              final_host = urllib.parse.urlsplit(final).hostname or '(tidak diketahui)'
+              # Hindari mencetak URL lengkap, query, deployment ID, atau isi respons ke log publik.
+              try:
+                  snapshot = parse(payload)
+                  pathlib.Path('_site/data/site.json').write_text(
+                      json.dumps(snapshot, ensure_ascii=False, separators=(',', ':')),
+                      encoding='utf-8'
+                  )
+                  print('JSON ARTAL diterima dan valid.', flush=True)
+                  break
+              except (ValueError, UnicodeError, TypeError) as exc:
+                  is_html = payload.lstrip().lower().startswith((b'<!doctype html', b'<html', b'<head')) or b'<html' in payload[:512].lower()
+                  category = 'HTML' if is_html else 'non-JSON / skema tidak sesuai'
+                  if final_host == 'accounts.google.com':
+                      category += ' (halaman login Google)'
+                  elif final_host == 'script.googleusercontent.com':
+                      category += ' (respons layanan konten Google)'
+                  elif final_host == 'script.google.com':
+                      category += ' (halaman Apps Script, bukan data)'
+                  last = f'HTTP {code}, host akhir {final_host}, jenis {ctype}, respons {category}'
+                  print('Diagnostik:', last, flush=True)
+                  # ContentService kadang menghasilkan pengalihan yang belum siap;
+                  # coba URL pengalihan yang sama sekali lagi setelah jeda.
+                  if is_html and final_host == 'script.googleusercontent.com':
+                      time.sleep(4)
+                      try:
+                          _, _, _, payload2 = fetch(final)
+                          snapshot = parse(payload2)
+                          pathlib.Path('_site/data/site.json').write_text(
+                              json.dumps(snapshot, ensure_ascii=False, separators=(',', ':')),
+                              encoding='utf-8'
+                          )
+                          print('JSON diterima setelah mencoba ulang URL konten Google.', flush=True)
+                          break
+                      except Exception:
+                          print('URL konten Google masih belum menghasilkan JSON.', flush=True)
+                  if attempt < 4: time.sleep(6)
+          else:
+              sys.exit('::error::Sinkronisasi dihentikan dengan aman. ' + last +
+                       '. Periksa apakah ARTAL_JSON_URL sama persis dengan URL /exec yang menampilkan JSON di Incognito. ' +
+                       'Website publik yang sebelumnya sudah terbit tidak diubah.')
           PY
-            then
-              mv "$temp_file" _site/data/site.json
-              echo 'JSON ARTAL diterima dan tervalidasi.'
-              found=true
-              break
-            fi
-
-            # Jangan tampilkan isi respons atau URL Google di log publik.
-            if [ -z "$http_code" ]; then http_code='tidak diketahui'; fi
-            if head -c 150 "$temp_file" | grep -Eiq '<!doctype html|<html|<head|<body'; then
-              echo "Peringatan: respons Google berupa HTML (HTTP ${http_code}), bukan JSON."
-            else
-              echo "Peringatan: respons tidak sesuai skema JSON ARTAL (HTTP ${http_code})."
-            fi
-            rm -f "$temp_file"
-            if [ "$attempt" -lt 8 ]; then sleep 8; fi
-          done
-
-          if [ "$found" != true ]; then
-            echo '::error::Delapan percobaan belum menghasilkan JSON ARTAL yang valid. Periksa URL /exec di ARTAL_JSON_URL, izin Anyone, dan status Apps Script pada Executions. Publikasi lama tidak diubah.'
-            exit 1
-          fi
 
       - name: Tampilkan ringkasan konten valid
         shell: bash
