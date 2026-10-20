@@ -1,9 +1,6 @@
-# ARTAL V8.2 — Sinkronisasi otomatis tanpa Personal Access Token
-# Nama file ketika dibuat di GitHub:
-# .github/workflows/sinkron-artal.yml
-# Sebelum menjalankan: buat Repository variable bernama ARTAL_JSON_URL
-# berisi URL /exec dari Apps Script ARTAL - SINKRONISASI PUBLIK.
-# Set Settings > Pages > Source: GitHub Actions.
+# ARTAL V8.3 — Perbaikan sinkronisasi GitHub Pages tanpa Personal Access Token.
+# Tempel seluruh isi ini ke: .github/workflows/sinkron-artal.yml
+# Tidak perlu mengubah Apps Script Admin, Google Sheets, atau Google Drive.
 
 name: Sinkronisasi ARTAL ke GitHub Pages
 
@@ -36,61 +33,90 @@ jobs:
       - name: Ambil kode website ARTAL
         uses: actions/checkout@v4
 
-      - name: Ambil JSON terbit dari Apps Script
+      - name: Ambil dan validasi JSON Apps Script dengan percobaan ulang
         env:
           ARTAL_JSON_URL: ${{ vars.ARTAL_JSON_URL }}
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "${ARTAL_JSON_URL}" ]; then
-            echo '::error::Variable ARTAL_JSON_URL belum diatur di Settings > Secrets and variables > Actions > Variables.'
+          if [[ -z "${ARTAL_JSON_URL:-}" ]]; then
+            echo '::error::Repository variable ARTAL_JSON_URL belum diisi.'
             exit 1
           fi
-          mkdir -p _site/data
-          curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
-            --fail --location --silent --show-error \
-            --retry 3 --connect-timeout 15 --max-time 90 \
-            "$ARTAL_JSON_URL" --output _site/data/site.json
+          if [[ ! "$ARTAL_JSON_URL" =~ ^https://script\.google\.com/macros/s/[^/]+/exec([?].*)?$ ]]; then
+            echo '::error::ARTAL_JSON_URL harus berupa URL Apps Script /exec, bukan /dev, GitHub, atau URL redirect sementara.'
+            exit 1
+          fi
 
-      - name: Validasi data JSON sebelum dipublikasikan
+          mkdir -p _site/data
+          found=false
+          for attempt in 1 2 3 4 5 6 7 8; do
+            echo "Meminta JSON ARTAL — percobaan ${attempt}/8"
+            temp_file="$(mktemp)"
+            http_code="$(curl --proto '=https' --proto-redir '=https' --tlsv1.2 \
+              --location --silent --show-error \
+              --connect-timeout 15 --max-time 75 \
+              --header 'Accept: application/json,text/plain,*/*' \
+              --user-agent 'ARTAL-Public-GitHubPages-Sync/8.3' \
+              --output "$temp_file" --write-out '%{http_code}' \
+              "$ARTAL_JSON_URL" || true)"
+
+            if python3 - "$temp_file" <<'PY'
+          import json, pathlib, sys
+          path = pathlib.Path(sys.argv[1])
+          try:
+              if path.stat().st_size == 0 or path.stat().st_size > 5_000_000:
+                  sys.exit(1)
+              d = json.loads(path.read_text(encoding='utf-8-sig'))
+              expected = {'settings': dict, 'slides': list, 'agendas': list, 'albums': list, 'achievements': list, 'news': list}
+              if not isinstance(d, dict) or set(d) != set(expected):
+                  sys.exit(1)
+              if any(not isinstance(d[k], typ) for k, typ in expected.items()):
+                  sys.exit(1)
+              if not d['settings'].get('site_name'):
+                  sys.exit(1)
+          except (OSError, UnicodeError, ValueError, KeyError, TypeError):
+              sys.exit(1)
+          PY
+            then
+              mv "$temp_file" _site/data/site.json
+              echo 'JSON ARTAL diterima dan tervalidasi.'
+              found=true
+              break
+            fi
+
+            # Jangan tampilkan isi respons atau URL Google di log publik.
+            if [ -z "$http_code" ]; then http_code='tidak diketahui'; fi
+            if head -c 150 "$temp_file" | grep -Eiq '<!doctype html|<html|<head|<body'; then
+              echo "Peringatan: respons Google berupa HTML (HTTP ${http_code}), bukan JSON."
+            else
+              echo "Peringatan: respons tidak sesuai skema JSON ARTAL (HTTP ${http_code})."
+            fi
+            rm -f "$temp_file"
+            if [ "$attempt" -lt 8 ]; then sleep 8; fi
+          done
+
+          if [ "$found" != true ]; then
+            echo '::error::Delapan percobaan belum menghasilkan JSON ARTAL yang valid. Periksa URL /exec di ARTAL_JSON_URL, izin Anyone, dan status Apps Script pada Executions. Publikasi lama tidak diubah.'
+            exit 1
+          fi
+
+      - name: Tampilkan ringkasan konten valid
         shell: bash
         run: |
           python3 - <<'PY'
           import json
-          from pathlib import Path
-
-          path = Path('_site/data/site.json')
-          if not path.exists() or path.stat().st_size > 5_000_000:
-              raise SystemExit('Gagal: file JSON kosong/hilang/terlalu besar.')
-          try:
-              data = json.loads(path.read_text(encoding='utf-8'))
-          except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-              raise SystemExit('Gagal: respons Apps Script bukan JSON yang valid. ' + str(exc))
-          required = {
-              'settings': dict,
-              'slides': list,
-              'agendas': list,
-              'albums': list,
-              'achievements': list,
-              'news': list,
-          }
-          if not isinstance(data, dict) or set(data) != set(required):
-              raise SystemExit('Gagal: struktur JSON tidak sesuai skema publik ARTAL.')
-          for key, expected in required.items():
-              if not isinstance(data[key], expected):
-                  raise SystemExit('Gagal: tipe data ' + key + ' tidak sesuai.')
-          if not data['settings'].get('site_name'):
-              raise SystemExit('Gagal: identitas website belum tersedia.')
-          print('Data ARTAL valid dan aman untuk tahap publikasi.')
-          for key in ('slides', 'agendas', 'albums', 'achievements', 'news'):
-              print(key + ': ' + str(len(data[key])))
+          with open('_site/data/site.json', encoding='utf-8') as f:
+              data = json.load(f)
+          for name in ('slides', 'agendas', 'albums', 'achievements', 'news'):
+              print(name + ': ' + str(len(data[name])))
           PY
 
       - name: Siapkan file website untuk diterbitkan
         shell: bash
         run: |
           set -euo pipefail
-          test -s index.html || { echo '::error::index.html tidak ditemukan pada direktori utama.'; exit 1; }
+          test -s index.html || { echo '::error::index.html tidak ditemukan di root repository.'; exit 1; }
           cp index.html _site/index.html
           if [ -f .nojekyll ]; then cp .nojekyll _site/.nojekyll; fi
 
