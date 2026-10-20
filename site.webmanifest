@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "ARTAL — Kesenian Musik Patrol Jember",
+  "short_name": "ARTAL",
+  "description": "Website resmi Kesenian Musik Patrol ARTAL Jember",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fffaf5",
+  "theme_color": "#191919",
+  "icons": [
+    {
+      "src": "/artal-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/artal-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
