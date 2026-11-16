@@ -356,30 +356,51 @@ function loadArtalLiveJsonp() {
     document.head.appendChild(script);
   });
 }
-// ARTAL: snapshot publik ditanam di file ini agar halaman HP tetap lengkap saat Google memblokir skrip lintas-domain.
-// Sesudah itu, JSONP mencoba mengambil data terbaru untuk browser yang dapat mengaksesnya.
+// ARTAL: tampilkan snapshot lokal segera, lalu coba snapshot GitHub dan data live Admin.
+// Snapshot GitHub menjadi cadangan publik kedua jika JSONP Google tidak dapat dimuat di browser tertentu.
+function loadArtalGitHubSnapshot() {
+  return fetch('./data/site.json?ts=' + Date.now(), { cache: 'no-store' }).then((response) => {
+    if (!response.ok) throw new Error('HTTP ' + response.status + ' saat membaca data/site.json');
+    return response.json();
+  }).then((data) => {
+    if (!validArtalSite(data)) throw new Error('Struktur data/site.json tidak valid');
+    return data;
+  });
+}
 function artalStart() {
   let localReady = false;
+  let liveReady = false;
   try {
     const raw = document.getElementById('artalEmbeddedData').textContent;
     const saved = JSON.parse(raw);
-    if (!validArtalSite(saved)) throw new Error('Struktur cadangan data tidak sesuai.');
+    if (!validArtalSite(saved)) throw new Error('Struktur cadangan data tertanam tidak sesuai.');
     initSite(saved);
     localReady = true;
-    console.info('ARTAL: data cadangan langsung siap (tanpa jaringan).');
+    console.info('ARTAL: snapshot tertanam siap.');
   } catch (err) {
     console.error('ARTAL: gagal memuat data tertanam:', err);
-    routePage();
   }
+
+  // Ambil snapshot GitHub tanpa menunggu Apps Script. Jangan biarkan snapshot
+  // menimpa data live jika JSONP selesai lebih dahulu.
+  loadArtalGitHubSnapshot().then((snapshot) => {
+    if (!liveReady) {
+      initSite(snapshot);
+      localReady = true;
+      console.info('ARTAL: memakai snapshot publik GitHub.');
+    }
+  }).catch((err) => {
+    console.info('ARTAL: snapshot GitHub tidak tersedia; memakai data tertanam.', err.message);
+  });
+
   loadArtalLiveJsonp().then((fresh) => {
     if (!validArtalSite(fresh)) return;
-    // Perbarui halaman dengan data paling baru dari Admin bila koneksi memungkinkan.
+    liveReady = true;
     initSite(fresh);
     console.info('ARTAL: memakai pembaruan langsung dari Apps Script.');
   }).catch((err) => {
-    console.info('ARTAL: koneksi Google tidak tersedia; data cadangan tetap ditampilkan.',err.message);
-    // Jangan mengubah judul menjadi pesan error, jangan menggabungkan semua halaman.
-    if(!localReady && !SITE) routePage();
+    console.info('ARTAL: koneksi Google tidak tersedia; data cadangan tetap ditampilkan.', err.message);
+    if (!localReady && !SITE) routePage();
   });
 }
 artalStart();
