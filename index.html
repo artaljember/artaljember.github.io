@@ -319,7 +319,7 @@ window.addEventListener('hashchange',routePage);
 document.getElementById('calPrev').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()-1,1);selectedDate='';drawAgenda();};document.getElementById('calNext').onclick=()=>{calDate=new Date(calDate.getFullYear(),calDate.getMonth()+1,1);selectedDate='';drawAgenda();};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
 // ARTAL V9 — LANGSUNG KE APPS SCRIPT VIA JSONP, tanpa CSV dan GitHub Actions.
 // Browser mengunduh hanya data berstatus terbit dari API Apps Script publik.
-const ARTAL_LIVE_API_URL = 'https://script.google.com/macros/s/AKfycbwOANKRtSk64mIPSpwfuzYRyGPoSaEi363cD0WPzgJbQWwpZfF3jDetmXiCurE6mI19/exec';
+const ARTAL_LIVE_API_URL = 'https://script.google.com/macros/s/AKfycbxsYo8sQTu_GwW-4QQufspZ1dArBSDrjGFtKLGcGd6YnxbkrqL8V9h7ZGb2IDXu8eF4/exec';
 function validArtalSite(data) {
   return !!(data && typeof data.settings === 'object' && data.settings &&
     Array.isArray(data.slides) && Array.isArray(data.agendas) &&
