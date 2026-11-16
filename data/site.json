@@ -1,3 +1,163 @@
+{
+  "settings": {
+    "site_name": "Kesenian Musik Patrol \"ARTAL\"",
+    "site_short": "ARTAL",
+    "slogan": "Satu Irama, Sejuta Semangat",
+    "hero_intro": "Tradisi Berirama · Generasi Berkarya",
+    "description": "Mengenal perjalanan, penampilan, dan karya Kesenian Musik Patrol ARTAL.",
+    "about": "ARTAL adalah rumah kreativitas dan kebersamaan Pemuda Telengsari dalam kesenian musik patrol. Cerita lengkap grup dapat ditulis melalui panel pengaturan.",
+    "primary": "#191919",
+    "accent": "#f58220",
+    "coral": "#ffbe7b",
+    "lavender": "#39332f",
+    "background": "#fffaf5",
+    "font_title": "Poppins",
+    "font_body": "Plus Jakarta Sans",
+    "section_about": "true",
+    "section_agenda": "true",
+    "section_documentation": "true",
+    "section_achievements": "true",
+    "section_news": "true",
+    "contact_whatsapp": "",
+    "address": "",
+    "youtube": "",
+    "facebook": "",
+    "tiktok": "",
+    "instagram": "",
+    "footer_text": "Kesenian Musik Patrol ARTAL — Melestarikan tradisi, merayakan kreativitas.",
+    "hero_interval_seconds": "5",
+    "logo": "https://drive.google.com/thumbnail?id=13AYUNZZ-X_h2-P6pZdOwNUPRaJbKbCm_&sz=w640",
+    "favicon": "https://drive.google.com/thumbnail?id=13AYUNZZ-X_h2-P6pZdOwNUPRaJbKbCm_&sz=w640"
+  },
+  "slides": [
+    {
+      "id": "3f6b539d-c132-4d51-b4fa-7f1b4c95ca5b",
+      "title": "Logo",
+      "subtitle": "Logo Resmi Artal",
+      "image": "https://drive.google.com/thumbnail?id=13AYUNZZ-X_h2-P6pZdOwNUPRaJbKbCm_&sz=w1200",
+      "mobile": "https://drive.google.com/thumbnail?id=1KCI216Tz3_XrXMfJwLvej7C_Qj3LkQ6r&sz=w1200",
+      "button_text": "",
+      "button_url": ""
+    },
+    {
+      "id": "f45acf23-3c50-40ce-8154-c066476c7ef9",
+      "title": "Piala ARTAL",
+      "subtitle": "Prestasi ARTAL",
+      "image": "https://drive.google.com/thumbnail?id=1E2MRjVoc8nSmvj24V76U-C7qEjQd_oKo&sz=w1200",
+      "mobile": "https://drive.google.com/thumbnail?id=1uWkvJOftWI3SGLFIDmHJ5slmIJX8S_5O&sz=w1200",
+      "button_text": "",
+      "button_url": ""
+    },
+    {
+      "id": "f87df66d-8e38-4ec6-876a-2d49099db323",
+      "title": "Personel ARTAL",
+      "subtitle": "",
+      "image": "https://drive.google.com/thumbnail?id=1_fMtNBq0WylrnbZ9Vd5Jk6yOQcEy-xor&sz=w1200",
+      "mobile": "https://drive.google.com/thumbnail?id=1_fMtNBq0WylrnbZ9Vd5Jk6yOQcEy-xor&sz=w1200",
+      "button_text": "",
+      "button_url": ""
+    }
+  ],
+  "agendas": [],
+  "albums": [
+    {
+      "id": "8f6fd4ed-6357-4dc5-976f-ad6cbd077eb2",
+      "title": "Latihan",
+      "category": "Latihan",
+      "date": "2026-10-17",
+      "description": "Dokumentasi kegiatan latihan bersama personel kesenian musik patrol artal jember",
+      "cover": "https://drive.google.com/thumbnail?id=1ehk-Il8bk6C989XHkwSft0cqCc8d-5Yx&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1ehk-Il8bk6C989XHkwSft0cqCc8d-5Yx&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1s-ohrNIaSC5nDaFBe11GPf-jyThRGAXv&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1WL4A9wQ5mjbHuCsheJX8vgMk6cmKmgGQ&sz=w1200"
+      ],
+      "photo_count": 3
+    },
+    {
+      "id": "87804ea1-4b3b-4064-b4c4-af2f718060c6",
+      "title": "TK Aisyiyah",
+      "category": "Show",
+      "date": "2026-09-15",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1YcCKoaGZVG04ZOfaa8XJg58MvbjCm5ER&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1YcCKoaGZVG04ZOfaa8XJg58MvbjCm5ER&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1FeugFl6x6sYnHVIKI-umAGU3fyULrylp&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1vvBh87IVfa86NDGSLGGu58oj4b0NqCJK&sz=w1200"
+      ],
+      "photo_count": 3
+    },
+    {
+      "id": "edfc6e45-9668-499a-a91e-5bd9c0d69bc0",
+      "title": "Patrol-Aston",
+      "category": "Show",
+      "date": "2026-01-18",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1ufLB_p84rLOH98ArXXU9bFJF7N8_fVIG&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1ufLB_p84rLOH98ArXXU9bFJF7N8_fVIG&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1Kch2qeetNFdrX2KO3PqVvgYwb7OBfgho&sz=w1200",
+        "https://drive.google.com/thumbnail?id=10yRN9cSdVD97AytFMv99jkfCRcgRpxp7&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1fgsav7TvPA-RG4bUWEpK-T5Fg8z2VpYi&sz=w1200"
+      ],
+      "photo_count": 4
+    },
+    {
+      "id": "307a7a4d-9044-4b24-82cb-3cc983c6657a",
+      "title": "Aksesories Pertunjukkan",
+      "category": "Show",
+      "date": "2025-11-02",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1yg9pE_J7_BV-zu2HkgCfqD7PyeVTh3qr&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1yg9pE_J7_BV-zu2HkgCfqD7PyeVTh3qr&sz=w1200"
+      ],
+      "photo_count": 1
+    },
+    {
+      "id": "b6397b33-0a7c-4cb8-9423-3a6faa979e59",
+      "title": "Patrol-Omah Kulo's",
+      "category": "Personel",
+      "date": "2025-05-10",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=17vfLYk5F4vudhiSfIcO3P4b9UQOm1oe9&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=17vfLYk5F4vudhiSfIcO3P4b9UQOm1oe9&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1_gK7qCr5IDYtZ9wBPrS_69RB1Z1MNb6U&sz=w1200"
+      ],
+      "photo_count": 2
+    },
+    {
+      "id": "eaef4836-e3f8-40f8-9945-c3c763a181fa",
+      "title": "Aksesories Pertunjukkan",
+      "category": "Show",
+      "date": "2025-02-18",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=10hrPy43mD7scNQ3IlbvsEdOhanopkUGb&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=10hrPy43mD7scNQ3IlbvsEdOhanopkUGb&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1C1yZyorGf2L6vOOGi_WIPsaNxq3aD0F2&sz=w1200"
+      ],
+      "photo_count": 2
+    },
+    {
+      "id": "2db3d393-b6ca-44e8-88db-2349efb5499e",
+      "title": "Personel Patrol",
+      "category": "Show",
+      "date": "2025-02-18",
+      "description": "",
+      "cover": "https://drive.google.com/thumbnail?id=1kUypTjOnEIUFHYhzZ0dthVKFmqSTPyFa&sz=w640",
+      "photos": [
+        "https://drive.google.com/thumbnail?id=1kUypTjOnEIUFHYhzZ0dthVKFmqSTPyFa&sz=w1200",
+        "https://drive.google.com/thumbnail?id=1J0Lpt6sZL1bxj5VJQFTTRYw2uyP37aTd&sz=w1200"
+      ],
+      "photo_count": 2
+    },
+    {
+      "id": "5fa43fa5-2e82-4da3-9426-f2d8900d4f8c",
+      "title": "ARTAL-OJK",
+      "category": "Personel",
       "date": "2024-06-04",
       "description": "",
       "cover": "https://drive.google.com/thumbnail?id=1tU-lxIGadGh36H-Jf82r7rxHcKFB7YuF&sz=w640",
